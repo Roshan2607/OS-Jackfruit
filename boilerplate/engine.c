@@ -418,6 +418,10 @@ int child_fn(void *arg)
     close(config->log_write_fd);
     if (chroot(config->rootfs) != 0 || chdir("/") != 0) exit(1);
     sethostname(config->id, strlen(config->id));
+    if (mount(NULL, "/", NULL, MS_REC | MS_PRIVATE, NULL) != 0) {
+        perror("mount private failed");
+        exit(1);
+    }
     mount("proc", "/proc", "proc", 0, NULL);
     char *args[] = {config->command, NULL};
     execvp(args[0], args);
